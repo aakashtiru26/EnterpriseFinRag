@@ -10,13 +10,7 @@ from typing import List, Dict, Any, Optional
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("RAGService")
 
-# Dependencies check
-try:
-    from langchain_text_splitters import RecursiveCharacterTextSplitter
-    from langchain_community.vectorstores import FAISS
-    from langchain_huggingface import HuggingFaceEmbeddings
-except ImportError as e:
-    logger.error(f"Missing langchain dependencies: {e}. Please run pip install.")
+# Langchain dependencies will be imported lazily within methods to conserve startup memory.
 
 class RAGService:
     def __init__(self, data_dir: str = "backend/data"):
@@ -29,6 +23,7 @@ class RAGService:
     def embeddings(self):
         if self._embeddings is None:
             logger.info("Initializing HuggingFaceEmbeddings (all-MiniLM-L6-v2)...")
+            from langchain_huggingface import HuggingFaceEmbeddings
             self._embeddings = HuggingFaceEmbeddings(
                 model_name="all-MiniLM-L6-v2",
                 model_kwargs={'device': 'cpu'}
@@ -147,6 +142,7 @@ class RAGService:
                 raise ValueError("No text could be extracted from the document.")
 
             # Step 2: Split text into small chunks
+            from langchain_text_splitters import RecursiveCharacterTextSplitter
             text_splitter = RecursiveCharacterTextSplitter(
                 chunk_size=1000,
                 chunk_overlap=200,
@@ -173,6 +169,7 @@ class RAGService:
             # Step 3: Embed chunks and build FAISS vector store
             logger.info(f"Embedding {len(final_documents)} chunks for user {user_id}, doc {doc_id} ({filename})...")
             
+            from langchain_community.vectorstores import FAISS
             db = FAISS.from_documents(final_documents, self.embeddings)
             
             # Step 4: Save FAISS index in user's isolated directory
@@ -217,8 +214,9 @@ class RAGService:
         self.save_db(user_id, db)
         return True
 
-    def _get_combined_vector_store(self, user_id: str, doc_ids: Optional[List[str]] = None) -> Optional[FAISS]:
+    def _get_combined_vector_store(self, user_id: str, doc_ids: Optional[List[str]] = None) -> Optional["FAISS"]:
         """Loads and merges FAISS indexes within the user's isolated directory."""
+        from langchain_community.vectorstores import FAISS
         db_meta = self.load_db(user_id)
         active_docs = [
             d_id for d_id, doc in db_meta.items()

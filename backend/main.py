@@ -1,5 +1,6 @@
 import os
 import shutil
+import logging
 from uuid import uuid4
 from datetime import datetime
 from typing import List, Optional
@@ -10,6 +11,10 @@ import requests
 
 from rag_service import RAGService
 from auth_helper import get_current_user, verify_firebase_token, security_bearer
+
+# Setup logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("main")
 
 # Create FastAPI app
 app = FastAPI(title="Enterprise Financial RAG Assistant API")

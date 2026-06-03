@@ -51,6 +51,10 @@ class ChatRequest(BaseModel):
     demo_mode: Optional[bool] = False
 
 # Endpoints
+@app.get("/")
+async def root():
+    return {"message": "Enterprise Financial RAG Assistant API is online", "docs": "/docs"}
+
 @app.get("/api/health")
 async def health_check(request: Request, ollama_url: Optional[str] = None):
     """Health check endpoint. Supports optional auth for user statistics."""

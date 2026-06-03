@@ -20,7 +20,8 @@ import {
   Cpu,
   LogOut,
   Sun,
-  Moon
+  Moon,
+  Sparkles
 } from "lucide-react";
 
 interface HealthData {
@@ -29,6 +30,9 @@ interface HealthData {
     status: string;
     models: string[];
     url: string;
+  };
+  gemini?: {
+    status: string;
   };
   stats: {
     total_documents: number;
@@ -50,6 +54,7 @@ export default function DashboardLayout({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [backendHealth, setBackendHealth] = useState<"online" | "offline" | "checking">("checking");
   const [ollamaHealth, setOllamaHealth] = useState<"online" | "offline" | "checking">("checking");
+  const [geminiHealth, setGeminiHealth] = useState<"online" | "offline" | "checking">("checking");
   const [docStats, setDocStats] = useState({ total: 0, indexed: 0 });
   const [topSearchQuery, setTopSearchQuery] = useState("");
 
@@ -76,12 +81,16 @@ export default function DashboardLayout({
       if (token) {
         headers["Authorization"] = `Bearer ${token}`;
       }
-      
-      const res = await fetch(`${API_BASE}/api/health`, { headers });
+      const savedUrl = localStorage.getItem("ollama_url");
+      const url = savedUrl 
+        ? `${API_BASE}/api/health?ollama_url=${encodeURIComponent(savedUrl)}` 
+        : `${API_BASE}/api/health`;
+      const res = await fetch(url, { headers });
       if (res.ok) {
         const data: HealthData = await res.json();
         setBackendHealth("online");
         setOllamaHealth(data.ollama.status === "online" ? "online" : "offline");
+        setGeminiHealth(data.gemini?.status === "online" ? "online" : "offline");
         setDocStats({
           total: data.stats.total_documents,
           indexed: data.stats.indexed_documents
@@ -89,10 +98,12 @@ export default function DashboardLayout({
       } else {
         setBackendHealth("offline");
         setOllamaHealth("offline");
+        setGeminiHealth("offline");
       }
     } catch (e) {
       setBackendHealth("offline");
       setOllamaHealth("offline");
+      setGeminiHealth("offline");
     }
   };
 
@@ -182,19 +193,32 @@ export default function DashboardLayout({
               </div>
             </div>
 
-            {/* Ollama Health */}
-            <div className="flex items-center justify-between text-xs">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Cpu className="w-3.5 h-3.5" />
-                <span>Local Ollama</span>
+            {/* AI Engine Status */}
+            {geminiHealth === "online" ? (
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+                  <span>Cloud Gemini</span>
+                </div>
+                <div className="flex items-center gap-1.5 font-medium">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
+                  <span className="text-emerald-500">Online</span>
+                </div>
               </div>
-              <div className="flex items-center gap-1.5 font-medium">
-                <span className={`w-2 h-2 rounded-full ${ollamaHealth === "online" ? "bg-emerald-500 shadow-[0_0_8px_#10b981]" : ollamaHealth === "checking" ? "bg-amber-500 animate-pulse" : "bg-red-500"}`} />
-                <span className={ollamaHealth === "online" ? "text-emerald-500" : ollamaHealth === "checking" ? "text-amber-500" : "text-red-500"}>
-                  {ollamaHealth === "online" ? "Online" : ollamaHealth === "checking" ? "Checking" : "Offline"}
-                </span>
+            ) : (
+              <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Cpu className="w-3.5 h-3.5" />
+                  <span>Local Ollama</span>
+                </div>
+                <div className="flex items-center gap-1.5 font-medium">
+                  <span className={`w-2 h-2 rounded-full ${ollamaHealth === "online" ? "bg-emerald-500 shadow-[0_0_8px_#10b981]" : ollamaHealth === "checking" ? "bg-amber-500 animate-pulse" : "bg-red-500"}`} />
+                  <span className={ollamaHealth === "online" ? "text-emerald-500" : ollamaHealth === "checking" ? "text-amber-500" : "text-red-500"}>
+                    {ollamaHealth === "online" ? "Online" : ollamaHealth === "checking" ? "Checking" : "Offline"}
+                  </span>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Quick Logout */}

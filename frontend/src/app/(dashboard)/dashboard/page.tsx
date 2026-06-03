@@ -66,7 +66,11 @@ export default function DashboardPage() {
       };
 
       // Fetch health stats (user isolated)
-      const healthRes = await fetch(`${API_BASE}/api/health`, { headers });
+      const savedUrl = localStorage.getItem("ollama_url");
+      const url = savedUrl 
+        ? `${API_BASE}/api/health?ollama_url=${encodeURIComponent(savedUrl)}` 
+        : `${API_BASE}/api/health`;
+      const healthRes = await fetch(url, { headers });
       let activeModel = "None";
       let totalChunks = 0;
       

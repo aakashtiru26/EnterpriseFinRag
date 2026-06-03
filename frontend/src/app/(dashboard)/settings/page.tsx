@@ -89,7 +89,8 @@ export default function SettingsPage() {
         "Authorization": `Bearer ${token}`
       };
 
-      const res = await fetch(`${API_BASE}/api/health`, { headers });
+      const queryParams = new URLSearchParams({ ollama_url: ollamaUrl });
+      const res = await fetch(`${API_BASE}/api/health?${queryParams.toString()}`, { headers });
       if (res.ok) {
         const data = await res.json();
         

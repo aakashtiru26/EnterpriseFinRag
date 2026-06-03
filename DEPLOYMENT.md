@@ -54,6 +54,7 @@ Render is a cloud hosting provider that supports Python applications.
    Under the **Environment** tab, add:
    - `PYTHON_VERSION`: `3.11.0` (or similar)
    - `FIREBASE_PROJECT_ID`: Your actual Firebase project ID (enables ID token verification checks).
+   - `GEMINI_API_KEY`: Your Google Gemini API Key. *(Optional. If configured, the backend automatically uses Gemini 1.5 Flash for cloud conversations, removing the need for local Ollama servers or Ngrok tunnels).*
 5. **Note on State Persistence**:
    - Render's **Free Tier** does not include persistent disk storage. When the Render service restarts (e.g., after being inactive/sleeping or on redeployment), any uploaded PDFs and local FAISS vector indices will be deleted.
    - For a production deployment with persistent files, add a **Render Disk** mount (requires Render's paid individual instance tier, starting at $5/month) mounted at `/Users/aakashtiru/Desktop/Resume-Projects/fra/backend/backend/data` (which is where uploaded documents are saved).

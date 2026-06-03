@@ -92,6 +92,7 @@ function ChatPageContent() {
   const [ollamaUrl, setOllamaUrl] = useState("http://localhost:11434");
   const [modelName, setModelName] = useState("llama3");
   const [demoMode, setDemoMode] = useState(false);
+  const [usingGemini, setUsingGemini] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -125,18 +126,34 @@ function ChatPageContent() {
         };
 
         // 1. Fetch system health check
-        const healthRes = await fetch(`${API_BASE}/api/health`, { headers });
+        const savedUrl = localStorage.getItem("ollama_url");
+        const url = savedUrl 
+          ? `${API_BASE}/api/health?ollama_url=${encodeURIComponent(savedUrl)}` 
+          : `${API_BASE}/api/health`;
+        const healthRes = await fetch(url, { headers });
         if (healthRes.ok) {
           const healthData = await healthRes.json();
-          setOllamaUrl(healthData.ollama.url);
+          setOllamaUrl(healthData.ollama.url || savedUrl || "http://localhost:11434");
+          
           if (healthData.ollama.models.length > 0) {
-            setModelName(healthData.ollama.models[0]);
+            const currentSavedModel = localStorage.getItem("ollama_model");
+            if (currentSavedModel && healthData.ollama.models.includes(currentSavedModel)) {
+              setModelName(currentSavedModel);
+            } else {
+              setModelName(healthData.ollama.models[0]);
+            }
           }
-          const isManualDemo = localStorage.getItem("demo_mode") === "true";
-          if (isManualDemo) {
-            setDemoMode(true);
+          const isGemini = healthData.gemini?.status === "online";
+          setUsingGemini(isGemini);
+          if (isGemini) {
+            setDemoMode(false);
           } else {
-            setDemoMode(healthData.ollama.status !== "online");
+            const isManualDemo = localStorage.getItem("demo_mode") === "true";
+            if (isManualDemo) {
+              setDemoMode(true);
+            } else {
+              setDemoMode(healthData.ollama.status !== "online");
+            }
           }
         }
         
@@ -535,14 +552,20 @@ function ChatPageContent() {
           </div>
         </div>
 
-        {/* Ollama Status */}
+        {/* AI Mode Status */}
         <div className="pt-4 border-t border-border mt-4 shrink-0 flex items-center justify-between text-xs">
           <div className="flex items-center gap-2 text-muted-foreground">
             <Cpu className="w-4 h-4" />
             <span>AI Mode</span>
           </div>
-          <span className={`px-2 py-0.5 rounded-none text-[9px] font-mono font-medium ${demoMode ? "bg-amber-500/10 text-amber-500 border border-amber-500/20" : "bg-indigo-500/10 text-indigo-500 border border-indigo-500/20"}`}>
-            {demoMode ? "DEMO/SANDBOX" : `OLLAMA (${modelName})`}
+          <span className={`px-2 py-0.5 rounded-none text-[9px] font-mono font-medium ${
+            demoMode 
+              ? "bg-amber-500/10 text-amber-500 border border-amber-500/20" 
+              : usingGemini
+              ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
+              : "bg-indigo-500/10 text-indigo-500 border border-indigo-500/20"
+          }`}>
+            {demoMode ? "DEMO/SANDBOX" : usingGemini ? "GEMINI (1.5-FLASH)" : `OLLAMA (${modelName})`}
           </span>
         </div>
       </aside>

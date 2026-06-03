@@ -267,6 +267,40 @@ class RAGService:
             })
         return formatted_results
 
+    def query_llm_gemini(self, prompt: str, system_prompt: str, api_key: str) -> str:
+        import requests
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+        payload = {
+            "contents": [{
+                "parts": [{"text": prompt}]
+            }],
+            "systemInstruction": {
+                "parts": [{"text": system_prompt}]
+            },
+            "generationConfig": {
+                "temperature": 0.2
+            }
+        }
+        headers = {
+            "Content-Type": "application/json"
+        }
+        try:
+            logger.info("Sending request to Gemini API (gemini-1.5-flash)...")
+            response = requests.post(url, json=payload, headers=headers, timeout=60)
+            if response.status_code == 200:
+                res_data = response.json()
+                candidates = res_data.get("candidates", [])
+                if candidates:
+                    parts = candidates[0].get("content", {}).get("parts", [])
+                    if parts:
+                        return parts[0].get("text", "").strip()
+                raise Exception(f"Unexpected Gemini API response structure: {res_data}")
+            else:
+                raise Exception(f"Gemini API returned code {response.status_code}: {response.text}")
+        except Exception as e:
+            logger.error(f"Gemini API query failed: {e}")
+            raise e
+
     def query_llm_ollama(self, prompt: str, system_prompt: str, ollama_url: str, model_name: str) -> str:
         import requests
         url = f"{ollama_url.rstrip('/')}/api/generate"
@@ -281,7 +315,12 @@ class RAGService:
         }
         try:
             logger.info(f"Connecting to Ollama at {url} using model {model_name}...")
-            response = requests.post(url, json=payload, timeout=120)
+            response = requests.post(
+                url, 
+                json=payload, 
+                headers={"ngrok-skip-browser-warning": "true"}, 
+                timeout=120
+            )
             if response.status_code == 200:
                 res_data = response.json()
                 return res_data.get("response", "").strip()
@@ -381,10 +420,21 @@ class RAGService:
         )
         
         mode = "ollama"
+        gemini_api_key = os.environ.get("GEMINI_API_KEY")
+        
         if demo_mode:
             logger.info("Demo mode is forced. Generating simulated response.")
             answer = self.generate_demo_response(query, chunks)
             mode = "demo"
+        elif gemini_api_key:
+            try:
+                logger.info("GEMINI_API_KEY detected. Directing inference to Gemini API (gemini-1.5-flash)...")
+                answer = self.query_llm_gemini(prompt, system_prompt, gemini_api_key)
+                mode = "gemini"
+            except Exception as e:
+                logger.warning(f"Gemini API query failed: {e}. Falling back to demo mode.")
+                answer = self.generate_demo_response(query, chunks)
+                mode = "demo_fallback"
         else:
             try:
                 answer = self.query_llm_ollama(prompt, system_prompt, ollama_url, model_name)

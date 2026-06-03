@@ -47,19 +47,29 @@ class ChatRequest(BaseModel):
 
 # Endpoints
 @app.get("/api/health")
-async def health_check(request: Request):
+async def health_check(request: Request, ollama_url: Optional[str] = None):
     """Health check endpoint. Supports optional auth for user statistics."""
     ollama_status = "offline"
     ollama_models = []
     
-    # Try default Ollama url
+    # Try custom or default Ollama url
+    target_ollama_url = ollama_url or "http://localhost:11434"
     try:
-        response = requests.get("http://localhost:11434/api/tags", timeout=1)
+        response = requests.get(
+            f"{target_ollama_url.rstrip('/')}/api/tags", 
+            headers={"ngrok-skip-browser-warning": "true"}, 
+            timeout=3
+        )
         if response.status_code == 200:
             ollama_status = "online"
             ollama_models = [m.get("name") for m in response.json().get("models", [])]
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning(f"Ollama health check failed for {target_ollama_url}: {e}")
+        
+    # Check Gemini API availability
+    gemini_status = "offline"
+    if os.environ.get("GEMINI_API_KEY"):
+        gemini_status = "online"
         
     # Optional Auth stats check
     total_docs = 0
@@ -88,7 +98,10 @@ async def health_check(request: Request):
         "ollama": {
             "status": ollama_status,
             "models": ollama_models,
-            "url": "http://localhost:11434"
+            "url": target_ollama_url
+        },
+        "gemini": {
+            "status": gemini_status
         },
         "stats": {
             "total_documents": total_docs,

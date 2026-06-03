@@ -1,0 +1,26 @@
+# Python Virtual Environments
+backend/venv/
+backend/.venv/
+**/__pycache__/
+*.pyc
+
+# Local Data and Uploads (User private vectors and PDFs)
+backend/data/
+backend/data/users/
+
+# Node dependencies and builds
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+
+# Local Environment variables (Contains API secrets and credentials!)
+.env
+.env.local
+.env.*
+.env.production
+.env.development
+
+# Operating System Files
+.DS_Store
+Thumbs.db

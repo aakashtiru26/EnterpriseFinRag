@@ -1,0 +1,24 @@
+{
+  "91e03ef5-21e3-4e22-a5cb-7b613de6d47a": {
+    "id": "91e03ef5-21e3-4e22-a5cb-7b613de6d47a",
+    "filename": "test_report.txt",
+    "file_path": "backend/data/uploads/91e03ef5-21e3-4e22-a5cb-7b613de6d47a.txt",
+    "size_bytes": 778,
+    "status": "indexed",
+    "num_chunks": 1,
+    "created_at": "2026-06-03T11:56:10.838777",
+    "updated_at": "2026-06-03T11:56:31.387293",
+    "error": null
+  },
+  "409f8b94-f3b6-4f96-bbaa-cdbccc00fe75": {
+    "id": "409f8b94-f3b6-4f96-bbaa-cdbccc00fe75",
+    "filename": "quarterly ea report sample.pdf",
+    "file_path": "backend/data/uploads/409f8b94-f3b6-4f96-bbaa-cdbccc00fe75.pdf",
+    "size_bytes": 1649947,
+    "status": "indexed",
+    "num_chunks": 353,
+    "created_at": "2026-06-03T13:32:11.164706",
+    "updated_at": "2026-06-03T13:32:23.470019",
+    "error": null
+  }
+}

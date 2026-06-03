@@ -1,0 +1,15 @@
+Acme Corporation Financial Performance Highlights
+Q1 2026 Reports
+
+Acme Corporation reported a record revenue of $15.4 million for the first quarter of 2026, representing a 22% growth year-over-year compared to $12.6 million in Q1 2025.
+
+Operating Expenses:
+- Research and Development (R&D): $3.2 million, up from $2.8 million last year.
+- Sales and Marketing (S&M): $4.1 million, driven by the launch of Acme AI Console.
+- General and Administrative (G&A): $1.8 million.
+
+Net Income:
+Net income for the quarter stood at $2.9 million, showing a healthy net profit margin of 18.8%. 
+
+Key Risk Factors:
+Supply chain bottlenecks for custom chips and memory chips could impact server shipments in Q3 and Q4 of 2026. Global inflation continues to put upward pressure on labor costs.

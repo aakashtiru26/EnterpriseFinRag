@@ -49,6 +49,7 @@ class ChatRequest(BaseModel):
     ollama_url: Optional[str] = "http://localhost:11434"
     model_name: Optional[str] = "llama3"
     demo_mode: Optional[bool] = False
+    inference_mode: Optional[str] = "gemini"
 
 # Endpoints
 @app.get("/")
@@ -226,7 +227,8 @@ async def chat_documents(request: ChatRequest, current_user: dict = Depends(get_
             history=history,
             ollama_url=request.ollama_url,
             model_name=request.model_name,
-            demo_mode=request.demo_mode
+            demo_mode=request.demo_mode,
+            inference_mode=request.inference_mode
         )
         return result
     except Exception as e:

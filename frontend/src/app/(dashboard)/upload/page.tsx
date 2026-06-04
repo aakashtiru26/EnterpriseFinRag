@@ -199,10 +199,10 @@ export default function UploadPage() {
             onDragLeave={handleDrag}
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
-            className={`border border-dashed rounded-none p-6 sm:p-12 flex flex-col items-center justify-center text-center cursor-pointer transition-all ${
+            className={`border border-dashed rounded-2xl p-6 sm:p-12 flex flex-col items-center justify-center text-center cursor-pointer transition-all ${
               dragActive 
                 ? "border-indigo-500 bg-indigo-500/5" 
-                : "border-border hover:border-primary hover:bg-card"
+                : "border-border/30 bg-card/20 backdrop-blur-md hover:border-primary hover:bg-card/45"
             }`}
           >
             <input
@@ -213,7 +213,7 @@ export default function UploadPage() {
               className="hidden"
               accept=".pdf,.txt,.csv,.json,.md"
             />
-            <div className="w-12 h-12 border border-border bg-background flex items-center justify-center text-muted-foreground mb-4 rounded-none">
+            <div className="w-12 h-12 border border-border/30 bg-card/40 flex items-center justify-center text-muted-foreground mb-4 rounded-xl">
               <UploadCloud className="w-5 h-5" />
             </div>
             <h3 className="font-semibold text-sm text-foreground mb-1 uppercase font-mono tracking-wider">Drag & Drop Files</h3>
@@ -221,23 +221,23 @@ export default function UploadPage() {
               Accepts PDF, TXT, CSV, JSON, and Markdown formats. Processing runs locally.
             </p>
             <div className="flex flex-wrap gap-2 justify-center">
-              <span className="px-2 py-0.5 border border-border text-[9px] text-muted-foreground font-mono">PDF</span>
-              <span className="px-2 py-0.5 border border-border text-[9px] text-muted-foreground font-mono">TXT</span>
-              <span className="px-2 py-0.5 border border-border text-[9px] text-muted-foreground font-mono">CSV</span>
-              <span className="px-2 py-0.5 border border-border text-[9px] text-muted-foreground font-mono">MD</span>
-              <span className="px-2 py-0.5 border border-border text-[9px] text-muted-foreground font-mono">JSON</span>
+              <span className="px-2.5 py-0.5 border border-border/30 rounded-full text-[9px] text-muted-foreground font-mono bg-card/30 backdrop-blur-sm">PDF</span>
+              <span className="px-2.5 py-0.5 border border-border/30 rounded-full text-[9px] text-muted-foreground font-mono bg-card/30 backdrop-blur-sm">TXT</span>
+              <span className="px-2.5 py-0.5 border border-border/30 rounded-full text-[9px] text-muted-foreground font-mono bg-card/30 backdrop-blur-sm">CSV</span>
+              <span className="px-2.5 py-0.5 border border-border/30 rounded-full text-[9px] text-muted-foreground font-mono bg-card/30 backdrop-blur-sm">MD</span>
+              <span className="px-2.5 py-0.5 border border-border/30 rounded-full text-[9px] text-muted-foreground font-mono bg-card/30 backdrop-blur-sm">JSON</span>
             </div>
           </div>
 
           {/* Upload Queue list */}
           {files.length > 0 && (
-            <div className="border border-border bg-card p-6 space-y-4">
+            <div className="rounded-2xl bg-card/45 backdrop-blur-xl border border-border/30 p-6 space-y-4">
               <h3 className="text-xs font-mono font-semibold uppercase tracking-wider text-foreground">Ingestion Logger</h3>
               <div className="divide-y divide-border max-h-[350px] overflow-y-auto pr-2">
                 {files.map(file => (
                   <div key={file.id} className="py-4 flex items-start justify-between gap-4 first:pt-0 last:pb-0">
                     <div className="flex items-start gap-3 flex-1 min-w-0">
-                      <div className="p-2 border border-border bg-background text-muted-foreground shrink-0">
+                      <div className="p-2 border border-border/30 bg-background/50 text-muted-foreground shrink-0 rounded-lg">
                         <FileText className="w-5 h-5" />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -251,7 +251,7 @@ export default function UploadPage() {
                         {/* Progress Bar / Info */}
                         {file.status === "uploading" && (
                           <div className="space-y-1">
-                            <div className="w-full bg-background h-1 rounded-none overflow-hidden">
+                            <div className="w-full bg-background h-1 rounded-full overflow-hidden">
                               <div className="bg-indigo-650 h-full transition-all duration-300" style={{ width: `${file.progress}%` }} />
                             </div>
                             <span className="text-[9px] text-muted-foreground font-mono">Uploading payload to host API...</span>
@@ -265,7 +265,7 @@ export default function UploadPage() {
                         )}
                         {file.status === "processing" && (
                           <div className="space-y-1">
-                            <div className="w-full bg-background h-1 rounded-none overflow-hidden">
+                            <div className="w-full bg-background h-1 rounded-full overflow-hidden">
                               <div className="bg-amber-500 h-full animate-pulse" style={{ width: "75%" }} />
                             </div>
                             <span className="text-[9px] text-amber-550 font-mono">Parsing PDF pages & calculating embeddings...</span>
@@ -300,7 +300,7 @@ export default function UploadPage() {
 
         {/* Guidance Side panel */}
         <div className="space-y-6">
-          <div className="border border-border bg-card p-6 space-y-4">
+          <div className="rounded-2xl bg-card/45 backdrop-blur-xl border border-border/30 p-6 space-y-4">
             <h3 className="text-xs font-mono font-semibold uppercase tracking-wider text-foreground flex items-center gap-1.5">
               <Info className="w-4 h-4 text-indigo-500" /> Isolated Sandbox Ingestion
             </h3>

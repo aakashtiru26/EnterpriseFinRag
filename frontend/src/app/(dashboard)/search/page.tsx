@@ -144,7 +144,7 @@ function SearchPageContent() {
   };
 
   return (
-    <div className="space-y-8 font-mono text-foreground">
+    <div className="space-y-8 text-foreground">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-light tracking-tight text-foreground mb-2">Semantic Similarity Search</h1>
@@ -159,13 +159,13 @@ function SearchPageContent() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Query semantic themes, tables, or financial disclosures..."
-            className="w-full bg-card border border-border rounded-none pl-12 pr-4 py-3.5 text-xs text-foreground focus:outline-none focus:border-indigo-500/40 focus:ring-0"
+            className="w-full bg-card/45 backdrop-blur-md border border-border/40 rounded-xl pl-12 pr-4 py-3.5 text-xs text-foreground focus:outline-none focus:border-indigo-500/40 focus:ring-0 shadow-sm"
           />
         </div>
         <button 
           type="submit" 
           disabled={loading || !query.trim()}
-          className="px-6 py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs rounded-none transition-all disabled:opacity-40"
+          className="px-6 py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs rounded-xl transition-all disabled:opacity-40 font-bold"
         >
           Search
         </button>
@@ -175,7 +175,7 @@ function SearchPageContent() {
         {/* Search Controls Side panel */}
         <aside className="lg:col-span-1 space-y-6 order-2 lg:order-1">
           {/* Target Documents checklist */}
-          <div className="border border-border bg-card p-5 space-y-4">
+          <div className="border border-border/30 bg-card/45 backdrop-blur-xl p-5 space-y-4 rounded-2xl shadow-sm">
             <h3 className="font-semibold text-foreground text-xs uppercase tracking-wider flex items-center gap-1.5">
               <Files className="w-4 h-4 text-indigo-500" /> Filter Target
             </h3>
@@ -188,13 +188,13 @@ function SearchPageContent() {
                 {documents.map((doc) => (
                   <label 
                     key={doc.id} 
-                    className="flex items-center gap-2 px-2 py-1.5 rounded-none bg-background hover:bg-card cursor-pointer text-[10px] text-muted-foreground hover:text-foreground border border-border"
+                    className="flex items-center gap-2 px-2 py-1.5 rounded-xl bg-background/25 hover:bg-background/45 cursor-pointer text-[10px] text-muted-foreground hover:text-foreground border border-border/20 transition-all"
                   >
                     <input 
                       type="checkbox"
                       checked={selectedDocIds.includes(doc.id)}
                       onChange={() => handleDocToggle(doc.id)}
-                      className="rounded border-zinc-700 text-indigo-650 focus:ring-0 focus:ring-offset-0 bg-background w-3 h-3"
+                      className="rounded border-zinc-700 text-indigo-650 focus:ring-0 focus:ring-offset-0 bg-background w-3 h-3 animate-colors"
                     />
                     <span className="truncate flex-1" title={doc.filename}>{doc.filename}</span>
                   </label>
@@ -204,7 +204,7 @@ function SearchPageContent() {
           </div>
 
           {/* Knobs & Parameters */}
-          <div className="border border-border bg-card p-5 space-y-4">
+          <div className="border border-border/30 bg-card/45 backdrop-blur-xl p-5 space-y-4 rounded-2xl shadow-sm">
             <h3 className="font-semibold text-foreground text-xs uppercase tracking-wider flex items-center gap-1.5">
               <Sliders className="w-4 h-4 text-indigo-500" /> Parameters
             </h3>
@@ -223,7 +223,7 @@ function SearchPageContent() {
                   className="w-full accent-indigo-500 bg-background rounded-full h-1"
                 />
               </div>
-              <div className="bg-background p-3 border border-border space-y-2 text-[10px] text-muted-foreground">
+              <div className="bg-background/40 backdrop-blur-sm p-3 border border-border/30 rounded-xl space-y-2 text-[10px] text-muted-foreground">
                 <div className="flex justify-between">
                   <span>Metric</span>
                   <span className="text-foreground">L2 Cosine</span>
@@ -248,14 +248,14 @@ function SearchPageContent() {
             </div>
           ) : results.length === 0 ? (
             searched ? (
-              <div className="text-center py-20 border border-dashed border-border bg-card">
+              <div className="text-center py-20 border border-dashed border-border/30 bg-card/45 backdrop-blur-xl rounded-2xl shadow-sm">
                 <HelpCircle className="w-8 h-8 text-muted mx-auto mb-2" />
                 <h4 className="text-xs font-semibold text-foreground mb-1 uppercase tracking-wider">No Matches Found</h4>
                 <p className="text-[10px] text-muted-foreground max-w-sm mx-auto font-sans leading-relaxed">Try clearing filters or refining your query syntax to locate other indexed vectors.</p>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center py-24 border border-dashed border-border bg-card text-center">
-                <div className="w-10 h-10 border border-border bg-background flex items-center justify-center text-muted-foreground mb-4">
+              <div className="flex flex-col items-center justify-center py-24 border border-dashed border-border/30 bg-card/45 backdrop-blur-xl text-center rounded-2xl shadow-sm">
+                <div className="w-10 h-10 border border-border/40 bg-background/30 flex items-center justify-center text-muted-foreground mb-4 rounded-xl backdrop-blur-sm shadow-sm">
                   <Database className="w-5 h-5" />
                 </div>
                 <h3 className="font-semibold text-sm text-foreground mb-1 uppercase tracking-wider">Ready for Semantic Query</h3>
@@ -268,9 +268,9 @@ function SearchPageContent() {
               
               <div className="space-y-4">
                 {results.map((result, idx) => (
-                  <div key={idx} className="border border-border bg-card p-5 space-y-3.5 hover:border-primary transition-colors">
+                  <div key={idx} className="border border-border/30 bg-card/45 backdrop-blur-xl p-5 space-y-3.5 hover:border-indigo-500/40 hover:bg-card/60 transition-all rounded-2xl shadow-sm">
                     {/* Top row: match percentage and source metadata */}
-                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-2.5">
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/20 pb-2.5">
                       <div className="flex items-center gap-2">
                         <FileText className="w-4 h-4 text-indigo-500" />
                         <span className="text-xs font-semibold text-foreground truncate max-w-[200px]" title={result.metadata.source}>

@@ -25,7 +25,13 @@ interface Particle3D {
   color: string;
 }
 
-export default function ThreeDVectorSpace({ height = 450 }: { height?: number }) {
+export default function ThreeDVectorSpace({ 
+  height = 450,
+  fullScreen = false
+}: { 
+  height?: number; 
+  fullScreen?: boolean;
+}) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const { theme } = useTheme();
   
@@ -47,14 +53,14 @@ export default function ThreeDVectorSpace({ height = 450 }: { height?: number })
   // Initialize nodes in a 3D spherical structure
   useEffect(() => {
     const tempNodes: Node3D[] = [];
-    const nodeCount = 45;
+    const nodeCount = fullScreen ? 60 : 45;
     
     // Distribute nodes evenly on a sphere using Fibonacci lattice
     for (let i = 0; i < nodeCount; i++) {
       const phi = Math.acos(1 - (2 * i) / nodeCount);
       const theta = Math.sqrt(nodeCount * Math.PI) * phi;
       
-      const radius = 140; // Sphere radius
+      const radius = fullScreen ? 250 : 140; // sphere radius
       const x = radius * Math.sin(phi) * Math.cos(theta);
       const y = radius * Math.sin(phi) * Math.sin(theta);
       const z = radius * Math.cos(phi);
@@ -166,7 +172,7 @@ export default function ThreeDVectorSpace({ height = 450 }: { height?: number })
         let z2 = node.y * sinPitch + z1 * cosPitch;
 
         // Perspective projection
-        const fov = 400;
+        const fov = fullScreen ? 550 : 400;
         const scale = fov / (fov + z2);
         
         return {
@@ -318,12 +324,18 @@ export default function ThreeDVectorSpace({ height = 450 }: { height?: number })
       const canvas = canvasRef.current;
       if (!canvas) return;
       
-      const rect = canvas.parentElement?.getBoundingClientRect();
-      canvas.width = (rect?.width || 500) * window.devicePixelRatio;
-      canvas.height = height * window.devicePixelRatio;
-      
-      canvas.style.width = "100%";
-      canvas.style.height = `${height}px`;
+      if (fullScreen) {
+        canvas.width = window.innerWidth * window.devicePixelRatio;
+        canvas.height = window.innerHeight * window.devicePixelRatio;
+        canvas.style.width = "100vw";
+        canvas.style.height = "100vh";
+      } else {
+        const rect = canvas.parentElement?.getBoundingClientRect();
+        canvas.width = (rect?.width || 500) * window.devicePixelRatio;
+        canvas.height = height * window.devicePixelRatio;
+        canvas.style.width = "100%";
+        canvas.style.height = `${height}px`;
+      }
 
       const ctx = canvas.getContext("2d");
       if (ctx) {
@@ -334,7 +346,7 @@ export default function ThreeDVectorSpace({ height = 450 }: { height?: number })
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [height]);
+  }, [height, fullScreen]);
 
   // Mouse Interaction Handlers for 3D Drag rotation
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -365,6 +377,21 @@ export default function ThreeDVectorSpace({ height = 450 }: { height?: number })
   const handleMouseUpOrLeave = () => {
     isDraggingRef.current = false;
   };
+
+  if (fullScreen) {
+    return (
+      <div className="fixed inset-0 w-screen h-screen -z-50 overflow-hidden bg-background pointer-events-none">
+        {/* Dynamic light backdrop filter behind canvas */}
+        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[50vw] h-[50vh] rounded-full filter blur-[120px] pointer-events-none -z-10 transition-colors ${theme === "light" ? "bg-indigo-500/4" : "bg-indigo-500/6"}`} />
+        <div className={`absolute top-1/4 left-1/3 w-[30vw] h-[30vh] rounded-full filter blur-[100px] pointer-events-none -z-10 transition-colors ${theme === "light" ? "bg-emerald-500/3" : "bg-emerald-500/5"}`} />
+
+        <canvas
+          ref={canvasRef}
+          className="block w-full h-full"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className={`relative w-full overflow-hidden flex items-center justify-center rounded-2xl border transition-colors ${theme === "light" ? "border-border bg-card" : "border-white/5 bg-[#030303]"}`}>

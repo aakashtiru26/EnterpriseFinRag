@@ -159,9 +159,9 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="space-y-8 text-foreground font-mono">
+    <div className="space-y-8 text-foreground">
       {/* Welcome Hero Panel - Handhold inspired typography */}
-      <section className="relative overflow-hidden border border-border bg-card p-6 md:p-8">
+      <section className="relative overflow-hidden border border-border/30 bg-card/45 backdrop-blur-xl p-6 md:p-8 rounded-2xl shadow-sm">
         <div className="absolute right-0 top-0 w-80 h-full bg-gradient-to-l from-indigo-500/5 to-transparent pointer-events-none -z-10" />
         <div className="max-w-2xl">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 border border-border bg-background text-[9px] font-mono tracking-[0.2em] text-indigo-500 uppercase mb-4">
@@ -182,7 +182,7 @@ export default function DashboardPage() {
             </Link>
             <Link 
               href="/chat" 
-              className="px-4 py-2 border border-border bg-background hover:bg-card text-xs font-mono uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
+              className="px-4 py-2 border border-border/40 bg-background/30 hover:bg-card/40 backdrop-blur-sm text-xs font-mono uppercase tracking-wider text-muted-foreground hover:text-foreground transition-all rounded-xl"
             >
               Start Session
             </Link>
@@ -193,7 +193,7 @@ export default function DashboardPage() {
       {/* Analytics Overview Grid */}
       <section className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {/* Metric 1 */}
-        <div className="border border-border bg-card p-5 hover:border-primary transition-colors">
+        <div className="border border-border/30 bg-card/45 backdrop-blur-xl p-5 hover:border-indigo-500/40 hover:bg-card/60 transition-all rounded-2xl shadow-sm">
           <div className="flex justify-between items-start mb-4">
             <span className="text-[10px] font-mono font-semibold text-muted-foreground uppercase tracking-wider">Indexed Files</span>
             <div className="p-1.5 border border-indigo-500/20 text-indigo-500 bg-indigo-500/5 rounded">
@@ -211,7 +211,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Metric 2 */}
-        <div className="border border-border bg-card p-5 hover:border-primary transition-colors">
+        <div className="border border-border/30 bg-card/45 backdrop-blur-xl p-5 hover:border-indigo-500/40 hover:bg-card/60 transition-all rounded-2xl shadow-sm">
           <div className="flex justify-between items-start mb-4">
             <span className="text-[10px] font-mono font-semibold text-muted-foreground uppercase tracking-wider">Vector Chunks</span>
             <div className="p-1.5 border border-emerald-500/20 text-emerald-550 bg-emerald-500/5 rounded">
@@ -229,7 +229,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Metric 3 */}
-        <div className="border border-border bg-card p-5 hover:border-primary transition-colors">
+        <div className="border border-border/30 bg-card/45 backdrop-blur-xl p-5 hover:border-indigo-500/40 hover:bg-card/60 transition-all rounded-2xl shadow-sm">
           <div className="flex justify-between items-start mb-4">
             <span className="text-[10px] font-mono font-semibold text-muted-foreground uppercase tracking-wider">Ollama Model</span>
             <div className="p-1.5 border border-purple-500/20 text-purple-550 bg-purple-500/5 rounded">
@@ -249,7 +249,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Metric 4 */}
-        <div className="border border-border bg-card p-5 hover:border-primary transition-colors">
+        <div className="border border-border/30 bg-card/45 backdrop-blur-xl p-5 hover:border-indigo-500/40 hover:bg-card/60 transition-all rounded-2xl shadow-sm">
           <div className="flex justify-between items-start mb-4">
             <span className="text-[10px] font-mono font-semibold text-muted-foreground uppercase tracking-wider">Search Latency</span>
             <div className="p-1.5 border border-amber-500/20 text-amber-500 bg-amber-500/5 rounded">
@@ -266,13 +266,13 @@ export default function DashboardPage() {
       {/* Main Grid: How it Works & Recent Files */}
       <section className="grid lg:grid-cols-3 gap-6">
         {/* Step-by-Step Stepper */}
-        <div className="lg:col-span-1 border border-border bg-card p-6 space-y-6 flex flex-col justify-between">
+        <div className="lg:col-span-1 border border-border/30 bg-card/45 backdrop-blur-xl p-6 space-y-6 flex flex-col justify-between rounded-2xl shadow-sm">
           <div className="space-y-6">
             <h3 className="text-xs font-mono font-semibold uppercase tracking-wider text-foreground">Pipeline Stepper</h3>
             <div className="space-y-6 relative before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-border">
               {/* Step 1 */}
               <div className="flex gap-4 relative z-10">
-                <div className="w-6.5 h-6.5 rounded-full bg-background border border-indigo-500/40 flex items-center justify-center text-xs font-mono font-bold text-indigo-500 shrink-0">
+                <div className="w-6.5 h-6.5 rounded-full bg-indigo-500/10 border border-indigo-500/35 flex items-center justify-center text-xs font-mono font-bold text-indigo-500 shrink-0">
                   1
                 </div>
                 <div>
@@ -282,7 +282,7 @@ export default function DashboardPage() {
               </div>
               {/* Step 2 */}
               <div className="flex gap-4 relative z-10">
-                <div className="w-6.5 h-6.5 rounded-full bg-background border border-indigo-500/40 flex items-center justify-center text-xs font-mono font-bold text-indigo-500 shrink-0">
+                <div className="w-6.5 h-6.5 rounded-full bg-indigo-500/10 border border-indigo-500/35 flex items-center justify-center text-xs font-mono font-bold text-indigo-500 shrink-0">
                   2
                 </div>
                 <div>
@@ -292,7 +292,7 @@ export default function DashboardPage() {
               </div>
               {/* Step 3 */}
               <div className="flex gap-4 relative z-10">
-                <div className="w-6.5 h-6.5 rounded-full bg-background border border-indigo-500/40 flex items-center justify-center text-xs font-mono font-bold text-indigo-500 shrink-0">
+                <div className="w-6.5 h-6.5 rounded-full bg-indigo-500/10 border border-indigo-500/35 flex items-center justify-center text-xs font-mono font-bold text-indigo-500 shrink-0">
                   3
                 </div>
                 <div>
@@ -310,7 +310,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Recent Files Panel */}
-        <div className="lg:col-span-2 border border-border bg-card p-6 flex flex-col justify-between">
+        <div className="lg:col-span-2 border border-border/30 bg-card/45 backdrop-blur-xl p-6 flex flex-col justify-between rounded-2xl shadow-sm">
           <div>
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xs font-mono font-semibold uppercase tracking-wider text-foreground">Recent Uploads</h3>
@@ -328,7 +328,7 @@ export default function DashboardPage() {
                 <div className="h-10 bg-background rounded animate-pulse" />
               </div>
             ) : recentDocs.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-10 border border-dashed border-border bg-background">
+              <div className="flex flex-col items-center justify-center py-10 border border-dashed border-border/30 bg-background/20 rounded-xl">
                 <Files className="w-8 h-8 text-zinc-400 mb-2" />
                 <span className="text-xs text-muted-foreground font-semibold">No files indexed for this user</span>
                 <Link href="/upload" className="text-xs font-mono text-indigo-500 hover:underline mt-2.5">Upload a report</Link>
@@ -344,9 +344,9 @@ export default function DashboardPage() {
                       <th className="pb-3 uppercase tracking-wider">Status</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border">
+                  <tbody className="divide-y divide-border/20">
                     {recentDocs.map((doc) => (
-                      <tr key={doc.id} className="text-foreground hover:bg-background transition-colors">
+                      <tr key={doc.id} className="text-foreground hover:bg-background/20 rounded-xl transition-colors">
                         <td className="py-3.5 pr-4 font-medium max-w-[180px] truncate text-foreground animate-colors" title={doc.filename}>
                           {doc.filename}
                         </td>

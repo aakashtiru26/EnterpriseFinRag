@@ -370,7 +370,8 @@ class RAGService:
         history: List[Dict[str, str]] = None,
         ollama_url: str = "http://localhost:11434",
         model_name: str = "llama3",
-        demo_mode: bool = False
+        demo_mode: bool = False,
+        inference_mode: Optional[str] = None
     ) -> Dict[str, Any]:
         """Runs the isolated RAG cycle for a specific user ID."""
         # Retrieve context chunks from user-isolated vector stores
@@ -424,25 +425,34 @@ class RAGService:
         mode = "ollama"
         gemini_api_key = os.environ.get("GEMINI_API_KEY")
         
-        if demo_mode:
-            logger.info("Demo mode is forced. Generating simulated response.")
+        # Decide active mode based on inference_mode or fallbacks
+        selected_mode = inference_mode or ("demo" if demo_mode else "gemini" if gemini_api_key else "ollama")
+        
+        if selected_mode == "demo":
+            logger.info("Sandbox Demo mode selected. Generating simulated response.")
             answer = self.generate_demo_response(query, chunks)
             mode = "demo"
-        elif gemini_api_key:
-            try:
-                gemini_model = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash")
-                logger.info(f"GEMINI_API_KEY detected. Directing inference to Gemini API ({gemini_model})...")
-                answer = self.query_llm_gemini(prompt, system_prompt, gemini_api_key)
-                mode = "gemini"
-            except Exception as e:
-                logger.warning(f"Gemini API query failed: {e}. Falling back to demo mode.")
+        elif selected_mode == "gemini":
+            if gemini_api_key:
+                try:
+                    gemini_model = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash")
+                    logger.info(f"Directing inference to Gemini API ({gemini_model})...")
+                    answer = self.query_llm_gemini(prompt, system_prompt, gemini_api_key)
+                    mode = "gemini"
+                except Exception as e:
+                    logger.warning(f"Gemini API query failed: {e}. Falling back to demo mode.")
+                    answer = self.generate_demo_response(query, chunks)
+                    mode = "demo_fallback"
+            else:
+                logger.warning("Gemini mode selected but GEMINI_API_KEY is missing. Falling back to demo mode.")
                 answer = self.generate_demo_response(query, chunks)
                 mode = "demo_fallback"
-        else:
+        else: # ollama
             try:
                 answer = self.query_llm_ollama(prompt, system_prompt, ollama_url, model_name)
+                mode = "ollama"
             except Exception as e:
-                logger.warning("Ollama query failed. Falling back to demo mode.")
+                logger.warning(f"Ollama query failed: {e}. Falling back to demo mode.")
                 answer = self.generate_demo_response(query, chunks)
                 mode = "demo_fallback"
                 

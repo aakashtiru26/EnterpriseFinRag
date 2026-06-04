@@ -6,6 +6,7 @@
   --primary: #6366f1; /* Indigo 500 */
   --primary-foreground: #ffffff;
   --card: #09090d;
+  --card-glass: rgba(9, 9, 13, 0.45);
   --card-foreground: #fafafa;
   --border: rgba(255, 255, 255, 0.05);
   --accent-indigo: #818cf8;
@@ -20,6 +21,7 @@
   --primary: #4f46e5; /* Indigo 600 */
   --primary-foreground: #ffffff;
   --card: #ffffff;
+  --card-glass: rgba(255, 255, 255, 0.45);
   --card-foreground: #0c0c0e;
   --border: rgba(0, 0, 0, 0.08);
   --accent-indigo: #4f46e5;
@@ -49,42 +51,59 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Structural flat panels (Handhold inspired) */
+/* Sleek, minimalist translucent glassmorphic elements */
 .glass-panel {
-  background: var(--card);
+  background: var(--card-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border);
+  border-radius: 1rem;
 }
 
 .glass-panel-hover {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .glass-panel-hover:hover {
-  border-color: var(--primary);
-  background: var(--card);
-  opacity: 0.95;
+  border-color: rgba(99, 102, 241, 0.35);
+  background: rgba(99, 102, 241, 0.03);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .glass-card {
-  background: var(--card);
+  background: var(--card-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border);
+  border-radius: 1rem;
   transition: all 0.2s ease;
 }
 .glass-card:hover {
-  border-color: var(--primary);
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
 }
 
 .glass-input {
-  background: var(--background);
+  background: rgba(0, 0, 0, 0.2);
   border: 1px solid var(--border);
   color: var(--foreground);
+  border-radius: 0.75rem;
   transition: all 0.2s ease;
 }
+.light .glass-input {
+  background: rgba(255, 255, 255, 0.6);
+}
 .glass-input:focus {
-  border-color: var(--primary);
+  border-color: rgba(99, 102, 241, 0.4);
+  background: rgba(0, 0, 0, 0.3);
+}
+.light .glass-input:focus {
+  background: rgba(255, 255, 255, 0.9);
 }
 
 .glass-header {
-  background: var(--background);
+  background: var(--card-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
 }
 

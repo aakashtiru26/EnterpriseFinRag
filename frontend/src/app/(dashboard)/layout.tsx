@@ -23,6 +23,7 @@ import {
   Moon,
   Sparkles
 } from "lucide-react";
+import ThreeDVectorSpace from "@/components/ThreeDVectorSpace";
 
 interface HealthData {
   status: string;
@@ -135,11 +136,14 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen flex bg-background text-foreground">
+    <div className="min-h-screen flex bg-background text-foreground relative">
+      {/* Global fixed 3D Background */}
+      <ThreeDVectorSpace fullScreen={true} />
+
       {/* Sidebar - Desktop */}
-      <aside className="hidden md:flex flex-col w-64 shrink-0 border-r border-border bg-card relative z-30">
+      <aside className="hidden md:flex flex-col w-64 shrink-0 border-r border-border/30 bg-card/45 backdrop-blur-xl relative z-30">
         {/* Brand - text only layout inspired by handhold */}
-        <div className="h-16 border-b border-border px-6 flex items-center">
+        <div className="h-16 border-b border-border/30 px-6 flex items-center">
           <span className="font-mono text-sm tracking-[0.2em] font-bold text-foreground uppercase shrink-0">
             FIDELITYRAG
           </span>
@@ -168,9 +172,9 @@ export default function DashboardLayout({
         </nav>
 
         {/* System Health Status / Stats */}
-        <div className="p-4 border-t border-border bg-card space-y-4">
+        <div className="p-4 border-t border-border/30 bg-transparent space-y-4">
           {/* Document Counter */}
-          <div className="rounded-lg bg-background p-3 border border-border flex items-center justify-between">
+          <div className="rounded-xl bg-background/30 p-3 border border-border/20 flex items-center justify-between">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <FileText className="w-4 h-4 text-muted-foreground" />
               <span>Library files</span>
@@ -235,8 +239,8 @@ export default function DashboardLayout({
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 flex md:hidden">
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)} />
-          <aside className="w-64 bg-card border-r border-border flex flex-col relative z-50 h-full">
-            <div className="h-16 border-b border-border px-6 flex items-center justify-between">
+          <aside className="w-64 bg-card/75 backdrop-blur-xl border-r border-border/30 flex flex-col relative z-50 h-full">
+            <div className="h-16 border-b border-border/30 px-6 flex items-center justify-between">
               <span className="font-mono text-sm tracking-[0.2em] font-bold text-foreground uppercase">
                 FIDELITYRAG
               </span>
@@ -265,7 +269,7 @@ export default function DashboardLayout({
                 );
               })}
             </nav>
-            <div className="p-4 border-t border-border bg-card space-y-3">
+            <div className="p-4 border-t border-border/30 bg-transparent space-y-3">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-muted-foreground">API Gateway</span>
                 <span className={backendHealth === "online" ? "text-emerald-500 font-medium" : "text-red-500 font-medium"}>
@@ -286,7 +290,7 @@ export default function DashboardLayout({
       {/* Main Workspace */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Topbar */}
-        <header className="h-16 border-b border-border px-6 flex items-center justify-between bg-background/50 backdrop-blur-md sticky top-0 z-20">
+        <header className="h-16 border-b border-border/30 px-6 flex items-center justify-between bg-background/35 backdrop-blur-xl sticky top-0 z-20">
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setMobileMenuOpen(true)}
@@ -296,7 +300,7 @@ export default function DashboardLayout({
             </button>
 
             {/* Quick Search */}
-            <form onSubmit={handleTopSearchSubmit} className="hidden sm:flex items-center gap-2 bg-card border border-border rounded-lg px-3 py-1.5 w-72 focus-within:border-indigo-500/40 transition-colors">
+            <form onSubmit={handleTopSearchSubmit} className="hidden sm:flex items-center gap-2 bg-background/40 border border-border/40 rounded-xl px-3 py-1.5 w-72 focus-within:border-indigo-500/40 transition-colors backdrop-blur-md">
               <Search className="w-4 h-4 text-muted-foreground shrink-0" />
               <input 
                 type="text" 
@@ -319,7 +323,7 @@ export default function DashboardLayout({
             {/* Theme Toggle Button */}
             <button
               onClick={toggleTheme}
-              className="p-1.5 rounded-lg border border-border bg-card text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+              className="p-1.5 rounded-lg border border-border/40 bg-background/40 backdrop-blur-md text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
               title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
             >
               {theme === "dark" ? (

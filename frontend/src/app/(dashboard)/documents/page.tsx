@@ -132,7 +132,7 @@ export default function DocumentLibrary() {
   );
 
   return (
-    <div className="space-y-8 font-mono text-foreground">
+    <div className="space-y-8 text-foreground">
       {/* Header Panel */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -142,14 +142,14 @@ export default function DocumentLibrary() {
         <div className="flex gap-3 shrink-0">
           <button 
             onClick={fetchDocuments}
-            className="p-2.5 border border-border bg-card hover:bg-background text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            className="p-2.5 border border-border/40 bg-background/30 hover:bg-card/40 text-muted-foreground hover:text-foreground transition-all rounded-xl cursor-pointer backdrop-blur-sm"
             title="Refresh list"
           >
             <RefreshCw className="w-4 h-4" />
           </button>
           <Link 
             href="/upload"
-            className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-xs font-mono uppercase tracking-wider text-white transition-colors"
+            className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-xs uppercase tracking-wider text-white transition-all rounded-xl flex items-center justify-center font-bold"
           >
             Upload File
           </Link>
@@ -159,7 +159,7 @@ export default function DocumentLibrary() {
       {/* Search Filter and Counters */}
       <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
         {/* Search Bar */}
-        <div className="flex items-center gap-2 bg-card border border-border rounded-lg px-3 py-2 w-full sm:w-80 focus-within:border-indigo-500/40 transition-colors">
+        <div className="flex items-center gap-2 bg-card/45 backdrop-blur-md border border-border/40 rounded-xl px-3 py-2 w-full sm:w-80 focus-within:border-indigo-500/40 transition-colors">
           <Search className="w-4 h-4 text-muted-foreground shrink-0" />
           <input 
             type="text" 
@@ -182,8 +182,8 @@ export default function DocumentLibrary() {
           <div className="h-12 bg-background rounded animate-pulse" />
         </div>
       ) : filteredDocs.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 border border-dashed border-border bg-card text-center">
-          <div className="w-10 h-10 border border-border bg-background flex items-center justify-center text-muted-foreground mb-4">
+        <div className="flex flex-col items-center justify-center py-20 border border-dashed border-border/30 bg-card/45 backdrop-blur-xl rounded-2xl text-center shadow-sm">
+          <div className="w-10 h-10 border border-border/30 bg-background/30 flex items-center justify-center text-muted-foreground mb-4 rounded-xl backdrop-blur-sm shadow-sm">
             <Files className="w-5 h-5" />
           </div>
           <h3 className="font-semibold text-sm text-foreground mb-1 uppercase font-mono tracking-wider">No Documents Matches</h3>
@@ -196,18 +196,18 @@ export default function DocumentLibrary() {
           {!searchQuery && (
             <Link 
               href="/upload"
-              className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-xs font-mono uppercase tracking-wider text-white transition-colors"
+              className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-xs font-mono uppercase tracking-wider text-white transition-all rounded-xl font-bold"
             >
               Upload First File
             </Link>
           )}
         </div>
       ) : (
-        <div className="border border-border bg-card overflow-hidden">
+        <div className="border border-border/30 bg-card/45 backdrop-blur-xl overflow-hidden rounded-2xl shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="border-b border-border text-muted-foreground font-semibold bg-background">
+                <tr className="border-b border-border/20 text-muted-foreground font-semibold bg-background/25 backdrop-blur-md">
                   <th className="p-4 uppercase tracking-wider">File Name</th>
                   <th className="p-4 uppercase tracking-wider">Upload Date</th>
                   <th className="p-4 uppercase tracking-wider">Size</th>
@@ -216,9 +216,9 @@ export default function DocumentLibrary() {
                   <th className="p-4 text-right uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border">
+              <tbody className="divide-y divide-border/20">
                 {filteredDocs.map((doc) => (
-                  <tr key={doc.id} className="text-foreground hover:bg-background transition-colors">
+                  <tr key={doc.id} className="text-foreground hover:bg-background/25 transition-colors">
                     <td className="p-4 font-medium max-w-[240px] truncate text-foreground animate-colors" title={doc.filename}>
                       {doc.filename}
                     </td>

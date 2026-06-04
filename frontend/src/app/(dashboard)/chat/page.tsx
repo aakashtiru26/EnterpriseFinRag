@@ -94,6 +94,7 @@ function ChatPageContent() {
   const [demoMode, setDemoMode] = useState(false);
   const [usingGemini, setUsingGemini] = useState(false);
   const [geminiModelName, setGeminiModelName] = useState("gemini-3.5-flash");
+  const [inferenceMode, setInferenceMode] = useState("gemini");
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -149,14 +150,26 @@ function ChatPageContent() {
           if (healthData.gemini?.model) {
             setGeminiModelName(healthData.gemini.model);
           }
-          if (isGemini) {
+          
+          const savedInferenceMode = localStorage.getItem("inference_mode");
+          if (savedInferenceMode) {
+            setInferenceMode(savedInferenceMode);
+            if (savedInferenceMode === "demo") setDemoMode(true);
+            else setDemoMode(false);
+          } else if (isGemini) {
+            setInferenceMode("gemini");
             setDemoMode(false);
           } else {
             const isManualDemo = localStorage.getItem("demo_mode") === "true";
             if (isManualDemo) {
+              setInferenceMode("demo");
               setDemoMode(true);
+            } else if (healthData.ollama.status === "online") {
+              setInferenceMode("ollama");
+              setDemoMode(false);
             } else {
-              setDemoMode(healthData.ollama.status !== "online");
+              setInferenceMode("demo");
+              setDemoMode(true);
             }
           }
         }
@@ -286,7 +299,8 @@ function ChatPageContent() {
         history: chatHistory,
         ollama_url: ollamaUrl,
         model_name: modelName,
-        demo_mode: demoMode
+        demo_mode: inferenceMode === "demo",
+        inference_mode: inferenceMode
       };
 
       const res = await fetch(`${API_BASE}/api/chat`, {
@@ -443,7 +457,7 @@ function ChatPageContent() {
       )}
 
       {/* Sidebar: Documents Checklist + Session History */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-card p-4 flex flex-col justify-between border-r border-border transform transition-transform duration-300 lg:relative lg:translate-x-0 lg:z-auto lg:w-auto lg:col-span-1 lg:border-r-0 lg:border h-full ${
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-card/45 backdrop-blur-xl p-4 flex flex-col justify-between border-r border-border/30 transform transition-transform duration-300 lg:relative lg:translate-x-0 lg:z-auto lg:w-auto lg:col-span-1 lg:border-r-0 lg:border lg:border-border/30 lg:rounded-2xl h-full ${
         showMobileSidebar ? "translate-x-0" : "-translate-x-full"
       }`}>
         <div className="space-y-5 flex-1 flex flex-col overflow-hidden">
@@ -482,10 +496,10 @@ function ChatPageContent() {
                     <div 
                       key={doc.id} 
                       onClick={() => handleDocToggle(doc.id)}
-                      className={`flex items-center gap-2 px-2 py-1.5 border cursor-pointer transition-colors ${
+                      className={`flex items-center gap-2 px-2 py-1.5 border cursor-pointer transition-colors rounded-xl ${
                         isSelected
-                          ? "bg-indigo-600/10 border-indigo-500/20 text-indigo-500"
-                          : "bg-background border-border hover:border-primary text-muted-foreground"
+                          ? "bg-indigo-600/10 border-indigo-500/30 text-indigo-400 font-medium"
+                          : "bg-background/30 border-border/40 hover:border-indigo-500/40 text-muted-foreground"
                       }`}
                     >
                       <input
@@ -532,10 +546,10 @@ function ChatPageContent() {
                         selectSession(s.id);
                         setShowMobileSidebar(false);
                       }}
-                      className={`group flex items-center justify-between p-2 cursor-pointer border text-left transition-colors ${
+                      className={`group flex items-center justify-between p-2.5 cursor-pointer border text-left transition-colors rounded-xl ${
                         isActive
-                          ? "bg-background border-border text-foreground font-semibold"
-                          : "bg-transparent border-transparent text-muted-foreground hover:text-foreground hover:bg-background"
+                          ? "bg-background/60 border-border/40 text-foreground font-semibold"
+                          : "bg-transparent border-transparent text-muted-foreground hover:text-foreground hover:bg-background/20"
                       }`}
                     >
                       <span className="text-[10px] truncate flex-1 pr-2" title={s.title}>
@@ -557,27 +571,31 @@ function ChatPageContent() {
         </div>
 
         {/* AI Mode Status */}
-        <div className="pt-4 border-t border-border mt-4 shrink-0 flex items-center justify-between text-xs">
+        <div className="pt-4 border-t border-border/30 mt-4 shrink-0 flex items-center justify-between text-xs">
           <div className="flex items-center gap-2 text-muted-foreground">
             <Cpu className="w-4 h-4" />
             <span>AI Mode</span>
           </div>
-          <span className={`px-2 py-0.5 rounded-none text-[9px] font-mono font-medium ${
-            demoMode 
+          <span className={`px-2 py-0.5 rounded-lg text-[9px] font-mono font-medium ${
+            inferenceMode === "demo" 
               ? "bg-amber-500/10 text-amber-500 border border-amber-500/20" 
-              : usingGemini
+              : inferenceMode === "gemini"
               ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
               : "bg-indigo-500/10 text-indigo-500 border border-indigo-500/20"
           }`}>
-            {demoMode ? "DEMO/SANDBOX" : usingGemini ? `GEMINI (${geminiModelName.toUpperCase()})` : `OLLAMA (${modelName})`}
+            {inferenceMode === "demo" 
+              ? "SANDBOX DEMO" 
+              : inferenceMode === "gemini" 
+              ? `GEMINI (${geminiModelName.toUpperCase()})` 
+              : `OLLAMA (${modelName})`}
           </span>
         </div>
       </aside>
 
       {/* Main Chat Workspace */}
-      <div className="lg:col-span-3 flex flex-col border border-border h-full overflow-hidden bg-card">
+      <div className="lg:col-span-3 flex flex-col border border-border/30 h-full overflow-hidden bg-card/45 backdrop-blur-xl rounded-2xl">
         {/* Chat Header */}
-        <div className="h-14 border-b border-border px-6 flex items-center justify-between shrink-0 bg-card">
+        <div className="h-14 border-b border-border/30 px-6 flex items-center justify-between shrink-0 bg-transparent">
           <div className="flex items-center gap-2">
             <button 
               onClick={() => setShowMobileSidebar(true)}
@@ -603,10 +621,10 @@ function ChatPageContent() {
         </div>
 
         {/* Conversational Scroll Area */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-background">
+        <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-transparent">
           {messages.length === 0 ? (
             <div className="h-full flex flex-col justify-center items-center max-w-xl mx-auto text-center space-y-6">
-              <div className="w-12 h-12 border border-border bg-card flex items-center justify-center text-indigo-500">
+              <div className="w-12 h-12 border border-border/40 bg-card/40 flex items-center justify-center text-indigo-500 rounded-2xl backdrop-blur-md shadow-sm">
                 <Bot className="w-6 h-6 animate-pulse" />
               </div>
               <div>
@@ -618,12 +636,12 @@ function ChatPageContent() {
 
               {/* Suggestions prompt grid */}
               <div className="grid sm:grid-cols-2 gap-3 w-full">
-                {prePopulatedQueries.map((query) => (
+                {prePopulatedQueries.map((query, idx) => (
                   <button
-                    key={query}
-                    onClick={(e) => handleSend(e, query)}
+                    key={idx}
+                    onClick={() => setInputValue(query)}
                     disabled={documents.length === 0}
-                    className="p-3 text-left rounded-none bg-card border border-border hover:bg-background text-muted-foreground hover:text-foreground transition-all text-[10px] disabled:opacity-50 disabled:pointer-events-none uppercase font-mono tracking-wider"
+                    className="p-3 text-left rounded-xl bg-card/45 border border-border/40 hover:bg-background/40 text-muted-foreground hover:text-foreground transition-all text-[10px] disabled:opacity-50 disabled:pointer-events-none uppercase font-mono tracking-wider backdrop-blur-sm shadow-sm"
                   >
                     {query}
                   </button>
@@ -637,15 +655,15 @@ function ChatPageContent() {
                 className={`flex gap-4 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 {msg.role === "assistant" && (
-                  <div className="w-8 h-8 rounded-none border border-border bg-card flex items-center justify-center shrink-0 text-indigo-500">
+                  <div className="w-8 h-8 rounded-xl border border-border/40 bg-indigo-500/10 text-indigo-500 flex items-center justify-center shrink-0 shadow-sm">
                     <Bot className="w-4 h-4" />
                   </div>
                 )}
                 
-                <div className={`p-4 rounded-none max-w-[85%] border shadow-sm ${
+                <div className={`p-4 max-w-[85%] border shadow-sm ${
                   msg.role === "user" 
-                    ? "bg-indigo-600/10 border-indigo-500/20 text-foreground" 
-                    : "bg-card border-border text-foreground"
+                    ? "bg-indigo-600/10 border-indigo-500/30 text-foreground rounded-2xl rounded-tr-none" 
+                    : "bg-card/45 border-border/30 text-foreground rounded-2xl rounded-tl-none backdrop-blur-md"
                 }`}>
                   {renderMessageContent(msg)}
                 </div>
@@ -655,10 +673,10 @@ function ChatPageContent() {
           
           {loading && (
             <div className="flex gap-4 justify-start">
-              <div className="w-8 h-8 border border-border bg-card flex items-center justify-center shrink-0 text-indigo-500 animate-pulse">
+              <div className="w-8 h-8 rounded-xl border border-border/40 bg-indigo-500/10 text-indigo-500 flex items-center justify-center shrink-0 shadow-sm animate-pulse">
                 <Bot className="w-4 h-4" />
               </div>
-              <div className="p-4 rounded-none bg-card border border-border max-w-[85%] flex items-center gap-2">
+              <div className="p-4 rounded-2xl rounded-tl-none bg-card/45 border border-border/30 max-w-[85%] flex items-center gap-2 backdrop-blur-md shadow-sm">
                 <Loader2 className="w-4 h-4 animate-spin text-indigo-500" />
                 <span className="text-[9px] text-muted-foreground font-mono uppercase tracking-wider">Retrieving similarity nodes & generating...</span>
               </div>
@@ -669,7 +687,7 @@ function ChatPageContent() {
         </div>
 
         {/* Input Bar */}
-        <div className="p-4 border-t border-border bg-card shrink-0">
+        <div className="p-4 border-t border-border/30 bg-transparent shrink-0">
           <form onSubmit={handleSend} className="relative flex items-center">
             <input 
               type="text"
@@ -677,12 +695,12 @@ function ChatPageContent() {
               onChange={(e) => setInputValue(e.target.value)}
               placeholder="Ask a question about your indexed files..."
               disabled={loading || documents.length === 0}
-              className="w-full bg-background border border-border rounded-none pl-4 pr-12 py-3 text-xs text-foreground focus:outline-none focus:border-indigo-500/40 focus:ring-0 disabled:opacity-50 font-mono"
+              className="w-full bg-background/40 border border-border/40 rounded-xl pl-4 pr-12 py-3 text-xs text-foreground focus:outline-none focus:border-indigo-500/40 focus:ring-0 disabled:opacity-50 font-mono backdrop-blur-md"
             />
             <button 
               type="submit"
               disabled={loading || !inputValue.trim() || documents.length === 0}
-              className="absolute right-2 p-2 bg-indigo-600 hover:bg-indigo-500 text-white disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
+              className="absolute right-2 p-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
             >
               <Send className="w-3.5 h-3.5" />
             </button>
@@ -697,7 +715,7 @@ function ChatPageContent() {
 
       {/* Citation Popout Overlay Side drawer */}
       {activeCitation && (
-        <div className="fixed inset-y-0 right-0 w-full sm:w-[450px] bg-card border-l border-border shadow-2xl p-6 z-50 flex flex-col justify-between backdrop-blur-md">
+        <div className="fixed inset-y-0 right-0 w-full sm:w-[450px] bg-card/75 border-l border-border/30 shadow-2xl p-6 z-50 flex flex-col justify-between backdrop-blur-xl rounded-l-2xl">
           <div className="space-y-4 overflow-y-auto pr-1">
             <div className="flex justify-between items-center border-b border-border pb-4">
               <h3 className="font-semibold text-foreground text-xs uppercase tracking-wider flex items-center gap-2">

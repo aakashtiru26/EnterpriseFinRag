@@ -50,23 +50,23 @@ export default function ThreeDVectorSpace({
     "rgba(168, 85, 247, ",  // Purple
   ];
 
-  // Initialize nodes in a 3D spherical structure
+  // Initialize nodes in a 3D spherical structure (normalized radius = 1)
   useEffect(() => {
     const tempNodes: Node3D[] = [];
-    const nodeCount = fullScreen ? 60 : 45;
+    const nodeCount = fullScreen ? 65 : 45;
     
     // Distribute nodes evenly on a sphere using Fibonacci lattice
     for (let i = 0; i < nodeCount; i++) {
       const phi = Math.acos(1 - (2 * i) / nodeCount);
       const theta = Math.sqrt(nodeCount * Math.PI) * phi;
       
-      const radius = fullScreen ? 250 : 140; // sphere radius
-      const x = radius * Math.sin(phi) * Math.cos(theta);
-      const y = radius * Math.sin(phi) * Math.sin(theta);
-      const z = radius * Math.cos(phi);
+      // Normalized sphere coords (radius = 1)
+      const x = Math.sin(phi) * Math.cos(theta);
+      const y = Math.sin(phi) * Math.sin(theta);
+      const z = Math.cos(phi);
       
       const colorIndex = i % 3;
-      const size = Math.random() * 3 + 2;
+      const size = Math.random() * 3 + 2.2;
 
       tempNodes.push({
         x,
@@ -76,7 +76,7 @@ export default function ThreeDVectorSpace({
         yProj: 0,
         size,
         color: colors[colorIndex],
-        glow: Math.random() > 0.7,
+        glow: Math.random() > 0.6,
         alpha: Math.random() * 0.4 + 0.6,
       });
     }
@@ -88,14 +88,14 @@ export default function ThreeDVectorSpace({
       z: 0,
       xProj: 0,
       yProj: 0,
-      size: 7,
+      size: 8,
       color: "rgba(255, 255, 255, ",
       glow: true,
       alpha: 1.0,
     });
 
     setNodes(tempNodes);
-  }, []);
+  }, [fullScreen]);
 
   // Launch particles representing retrieval query cycles
   useEffect(() => {
@@ -146,14 +146,25 @@ export default function ThreeDVectorSpace({
       const cx = width / 2;
       const cy = height / 2;
       
-      // Auto-rotation (when not dragging)
+      // Calculate responsive radius based on current canvas size
+      const currentWidth = canvas.width / window.devicePixelRatio;
+      const dynamicRadius = fullScreen
+        ? Math.min(250, currentWidth * 0.35)
+        : Math.min(140, currentWidth * 0.38);
+
+      const time = Date.now() * 0.001;
+      
+      // Auto-rotation (when not dragging) - organic wobbling rotation
       if (!isDraggingRef.current) {
-        rotationRef.current.yaw += rotationRef.current.yawSpeed;
-        rotationRef.current.pitch += rotationRef.current.pitchSpeed;
+        const waveSpeedX = Math.sin(time * 0.4) * 0.0008;
+        const waveSpeedY = Math.cos(time * 0.25) * 0.0006;
+        
+        rotationRef.current.yaw += rotationRef.current.yawSpeed + waveSpeedX;
+        rotationRef.current.pitch += rotationRef.current.pitchSpeed + waveSpeedY;
         
         // Decay any residual speeds back to base
-        rotationRef.current.yawSpeed = rotationRef.current.yawSpeed * 0.98 + 0.003 * 0.02;
-        rotationRef.current.pitchSpeed = rotationRef.current.pitchSpeed * 0.98 + 0.002 * 0.02;
+        rotationRef.current.yawSpeed = rotationRef.current.yawSpeed * 0.97 + 0.004 * 0.03;
+        rotationRef.current.pitchSpeed = rotationRef.current.pitchSpeed * 0.97 + 0.003 * 0.03;
       }
 
       const cosYaw = Math.cos(rotationRef.current.yaw);
@@ -161,15 +172,19 @@ export default function ThreeDVectorSpace({
       const cosPitch = Math.cos(rotationRef.current.pitch);
       const sinPitch = Math.sin(rotationRef.current.pitch);
 
-      // 1. Project nodes into 3D space
+      // 1. Project nodes into 3D space with responsive scaling
       const projected = nodes.map((node) => {
+        const scaledX = node.x * dynamicRadius;
+        const scaledY = node.y * dynamicRadius;
+        const scaledZ = node.z * dynamicRadius;
+
         // Rotate around Y axis (yaw)
-        let x1 = node.x * cosYaw - node.z * sinYaw;
-        let z1 = node.x * sinYaw + node.z * cosYaw;
+        let x1 = scaledX * cosYaw - scaledZ * sinYaw;
+        let z1 = scaledX * sinYaw + scaledZ * cosYaw;
         
         // Rotate around X axis (pitch)
-        let y2 = node.y * cosPitch - z1 * sinPitch;
-        let z2 = node.y * sinPitch + z1 * cosPitch;
+        let y2 = scaledY * cosPitch - z1 * sinPitch;
+        let z2 = scaledY * sinPitch + z1 * cosPitch;
 
         // Perspective projection
         const fov = fullScreen ? 550 : 400;
@@ -184,8 +199,8 @@ export default function ThreeDVectorSpace({
         };
       });
 
-      // 2. Project and update active particles
-      const activeParticles = particlesRef.current.map((p) => {
+      // 2. Project and update active particles with curves and trails
+      const activeParticles = particlesRef.current.map((p, idx) => {
         // Move towards target (central hub)
         p.progress += p.speed;
         if (p.progress > 1.0) {
@@ -193,17 +208,29 @@ export default function ThreeDVectorSpace({
         }
         
         const targetNode = nodes[p.targetNodeIndex];
-        const currentX = p.x * (1 - p.progress) + targetNode.x * p.progress;
-        const currentY = p.y * (1 - p.progress) + targetNode.y * p.progress;
-        const currentZ = p.z * (1 - p.progress) + targetNode.z * p.progress;
+        
+        // Linear interpolation
+        let currentX = p.x * (1 - p.progress) + targetNode.x * p.progress;
+        let currentY = p.y * (1 - p.progress) + targetNode.y * p.progress;
+        let currentZ = p.z * (1 - p.progress) + targetNode.z * p.progress;
+
+        // Unique arced path for premium aesthetic
+        const arcPower = Math.sin(p.progress * Math.PI) * 0.15;
+        const angleOffset = idx * 0.85;
+        currentX += Math.cos(angleOffset) * arcPower;
+        currentY += Math.sin(angleOffset) * arcPower;
+
+        const scaledX = currentX * dynamicRadius;
+        const scaledY = currentY * dynamicRadius;
+        const scaledZ = currentZ * dynamicRadius;
 
         // Rotate
-        let x1 = currentX * cosYaw - currentZ * sinYaw;
-        let z1 = currentX * sinYaw + currentZ * cosYaw;
-        let y2 = currentY * cosPitch - z1 * sinPitch;
-        let z2 = currentY * sinPitch + z1 * cosPitch;
+        let x1 = scaledX * cosYaw - scaledZ * sinYaw;
+        let z1 = scaledX * sinYaw + scaledZ * cosYaw;
+        let y2 = scaledY * cosPitch - z1 * sinPitch;
+        let z2 = scaledY * sinPitch + z1 * cosPitch;
 
-        const fov = 400;
+        const fov = fullScreen ? 550 : 400;
         const scale = fov / (fov + z2);
 
         return {
@@ -229,19 +256,32 @@ export default function ThreeDVectorSpace({
         // Skip drawing connections from central hub
         if (nodeA.original === nodes[nodes.length - 1]) continue;
 
+        // Draw connections to central hub for active/glowing nodes
+        if (nodeA.original.glow) {
+          const hub = projected[projected.length - 1];
+          const hubAlpha = (Math.sin(time * 3 + i) * 0.05 + 0.06) * nodeA.original.alpha;
+          const lineColor = theme === "light" ? "99, 102, 241" : "129, 140, 248";
+          ctx.strokeStyle = `rgba(${lineColor}, ${hubAlpha})`;
+          ctx.beginPath();
+          ctx.moveTo(nodeA.xProj, nodeA.yProj);
+          ctx.lineTo(hub.xProj, hub.yProj);
+          ctx.stroke();
+        }
+
         for (let j = i + 1; j < projected.length; j++) {
           const nodeB = projected[j];
           if (nodeB.original === nodes[nodes.length - 1]) continue;
 
-          // Calculate 3D Euclidean distance
+          // Calculate normalized 3D Euclidean distance
           const dx = nodeA.original.x - nodeB.original.x;
           const dy = nodeA.original.y - nodeB.original.y;
           const dz = nodeA.original.z - nodeB.original.z;
           const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
-          // Draw connection if nodes are physically close
-          if (dist < 85) {
-            const alpha = (1 - dist / 85) * 0.12 * nodeA.original.alpha;
+          // Draw connection if nodes are physically close in normalized sphere
+          if (dist < 0.65) {
+            const shimmer = Math.sin(time * 2 + i) * 0.03 + 0.09;
+            const alpha = (1 - dist / 0.65) * shimmer * nodeA.original.alpha;
             const lineColor = theme === "light" ? "12, 12, 14" : "255, 255, 255";
             ctx.strokeStyle = `rgba(${lineColor}, ${alpha})`;
             ctx.beginPath();
@@ -254,10 +294,18 @@ export default function ThreeDVectorSpace({
 
       // 4. Draw node points
       projected.forEach((p) => {
-        const size = p.original.size * p.scale;
+        // Dynamic pulsate central hub & shimmers for glowing nodes
+        const isHub = p.original.x === 0 && p.original.y === 0 && p.original.z === 0;
+        const pulse = isHub
+          ? Math.sin(time * 3) * 1.5
+          : p.original.glow
+            ? Math.sin(time * 5 + p.original.x * 10) * 0.5
+            : 0;
+
+        const size = Math.max(0.5, (p.original.size + pulse) * p.scale);
         
         // Determine color opacity based on depth
-        const depthAlpha = Math.max(0.15, (250 - p.zDepth) / 350);
+        const depthAlpha = Math.max(0.15, (dynamicRadius - p.zDepth) / (dynamicRadius * 2));
         const finalAlpha = p.original.alpha * depthAlpha;
         
         ctx.beginPath();
@@ -374,6 +422,33 @@ export default function ThreeDVectorSpace({
     rotationRef.current.pitchSpeed = dy * sensitivity * 0.1;
   };
 
+  // Touch Handlers for Mobile responsiveness and interaction
+  const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (e.touches.length === 1) {
+      isDraggingRef.current = true;
+      dragStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      dragRotationRef.current = { 
+        yaw: rotationRef.current.yaw, 
+        pitch: rotationRef.current.pitch 
+      };
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (!isDraggingRef.current || e.touches.length !== 1) return;
+    
+    const dx = e.touches[0].clientX - dragStartRef.current.x;
+    const dy = e.touches[0].clientY - dragStartRef.current.y;
+    
+    const sensitivity = 0.008; // slightly higher sensitivity on touch screens
+    
+    rotationRef.current.yaw = dragRotationRef.current.yaw + dx * sensitivity;
+    rotationRef.current.pitch = dragRotationRef.current.pitch + dy * sensitivity;
+    
+    rotationRef.current.yawSpeed = dx * sensitivity * 0.1;
+    rotationRef.current.pitchSpeed = dy * sensitivity * 0.1;
+  };
+
   const handleMouseUpOrLeave = () => {
     isDraggingRef.current = false;
   };
@@ -405,6 +480,9 @@ export default function ThreeDVectorSpace({
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUpOrLeave}
         onMouseLeave={handleMouseUpOrLeave}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleMouseUpOrLeave}
         className="block cursor-grab active:cursor-grabbing max-w-full z-10"
       />
       

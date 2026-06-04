@@ -316,7 +316,10 @@ class RAGService:
             response = requests.post(
                 url, 
                 json=payload, 
-                headers={"ngrok-skip-browser-warning": "true"}, 
+                headers={
+                    "ngrok-skip-browser-warning": "true",
+                    "Bypass-Tunnel-Reminder": "true"
+                }, 
                 timeout=120
             )
             if response.status_code == 200:

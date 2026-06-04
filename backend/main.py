@@ -66,7 +66,10 @@ async def health_check(request: Request, ollama_url: Optional[str] = None):
     try:
         response = requests.get(
             f"{target_ollama_url.rstrip('/')}/api/tags", 
-            headers={"ngrok-skip-browser-warning": "true"}, 
+            headers={
+                "ngrok-skip-browser-warning": "true",
+                "Bypass-Tunnel-Reminder": "true"
+            }, 
             timeout=3
         )
         if response.status_code == 200:

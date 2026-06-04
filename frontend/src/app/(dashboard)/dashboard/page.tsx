@@ -171,7 +171,7 @@ export default function DashboardPage() {
             Welcome back, {currentUser?.displayName || "Analyst"}
           </h1>
           <p className="text-xs text-muted-foreground leading-relaxed mb-6 font-sans">
-            Segmented workspace isolated for `{currentUser?.email}`. Upload PDF statements and annual filings to generate a user-isolated local vector store. Chat queries and semantic checks will run locally on your host environment.
+            Segmented workspace isolated for `{currentUser?.email}`. Upload PDF statements and annual filings to generate a user-isolated local vector store. Chat queries and semantic checks can run dynamically via Cloud Gemini, Local Ollama, or Sandbox Demo.
           </p>
           <div className="flex flex-wrap gap-4">
             <Link 
@@ -277,7 +277,7 @@ export default function DashboardPage() {
                 </div>
                 <div>
                   <h4 className="text-xs font-semibold text-foreground">Segment Ingestion</h4>
-                  <p className="text-[10px] text-muted-foreground mt-1 font-sans leading-relaxed">Ingest PDF/TXT reports. The backend parses files page-by-page and structures text chunks.</p>
+                  <p className="text-[10px] text-muted-foreground mt-1 font-sans leading-relaxed">Ingest statements (PDF, TXT, CSV, JSON, MD). The backend parses files page-by-page to structure text chunks.</p>
                 </div>
               </div>
               {/* Step 2 */}
@@ -287,7 +287,7 @@ export default function DashboardPage() {
                 </div>
                 <div>
                   <h4 className="text-xs font-semibold text-foreground">Vector Isolation</h4>
-                  <p className="text-[10px] text-muted-foreground mt-1 font-sans leading-relaxed">Generate 384-dimension embeddings locally. Indices are saved in user-isolated directories.</p>
+                  <p className="text-[10px] text-muted-foreground mt-1 font-sans leading-relaxed">Generate 384-dimensional embeddings on CPU. Vector indices are stored in private user-isolated directories.</p>
                 </div>
               </div>
               {/* Step 3 */}
@@ -296,8 +296,8 @@ export default function DashboardPage() {
                   3
                 </div>
                 <div>
-                  <h4 className="text-xs font-semibold text-foreground">Local RAG Chats</h4>
-                  <p className="text-[10px] text-muted-foreground mt-1 font-sans leading-relaxed">Converse with Ollama. Answer statements are returned containing inline verifiable references.</p>
+                  <h4 className="text-xs font-semibold text-foreground">Hybrid RAG Chats</h4>
+                  <p className="text-[10px] text-muted-foreground mt-1 font-sans leading-relaxed">Converse via Cloud Gemini, local Ollama endpoints, or Sandbox Demo. Yields inline verifiable citations.</p>
                 </div>
               </div>
             </div>

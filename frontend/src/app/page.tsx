@@ -80,7 +80,7 @@ export default function LandingPage() {
                 </h1>
                 
                 <p className="text-zinc-400 text-sm md:text-base max-w-xl leading-relaxed font-sans">
-                  A private, multi-user local RAG console. Ingest financial prospectuses, annual sheets, and quarterly statements. Generate semantic FAISS vector stores locally and converse in an isolated private sandbox.
+                  A private, multi-user hybrid RAG console. Ingest financial prospectuses and quarterly statements to generate isolated FAISS vector stores. Converse using Cloud Gemini, Local Ollama, or Sandbox Demo engines.
                 </p>
                 
                 <div className="flex flex-wrap items-center gap-4 pt-2">

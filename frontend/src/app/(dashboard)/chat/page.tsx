@@ -93,6 +93,7 @@ function ChatPageContent() {
   const [modelName, setModelName] = useState("llama3");
   const [demoMode, setDemoMode] = useState(false);
   const [usingGemini, setUsingGemini] = useState(false);
+  const [geminiModelName, setGeminiModelName] = useState("gemini-3.5-flash");
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -145,6 +146,9 @@ function ChatPageContent() {
           }
           const isGemini = healthData.gemini?.status === "online";
           setUsingGemini(isGemini);
+          if (healthData.gemini?.model) {
+            setGeminiModelName(healthData.gemini.model);
+          }
           if (isGemini) {
             setDemoMode(false);
           } else {
@@ -565,7 +569,7 @@ function ChatPageContent() {
               ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
               : "bg-indigo-500/10 text-indigo-500 border border-indigo-500/20"
           }`}>
-            {demoMode ? "DEMO/SANDBOX" : usingGemini ? "GEMINI (1.5-FLASH)" : `OLLAMA (${modelName})`}
+            {demoMode ? "DEMO/SANDBOX" : usingGemini ? `GEMINI (${geminiModelName.toUpperCase()})` : `OLLAMA (${modelName})`}
           </span>
         </div>
       </aside>

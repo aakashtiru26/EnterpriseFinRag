@@ -267,7 +267,8 @@ class RAGService:
 
     def query_llm_gemini(self, prompt: str, system_prompt: str, api_key: str) -> str:
         import requests
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+        gemini_model = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash")
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{gemini_model}:generateContent?key={api_key}"
         payload = {
             "contents": [{
                 "parts": [{"text": prompt}]
@@ -283,7 +284,7 @@ class RAGService:
             "Content-Type": "application/json"
         }
         try:
-            logger.info("Sending request to Gemini API (gemini-1.5-flash)...")
+            logger.info(f"Sending request to Gemini API ({gemini_model})...")
             response = requests.post(url, json=payload, headers=headers, timeout=60)
             if response.status_code == 200:
                 res_data = response.json()
@@ -429,7 +430,8 @@ class RAGService:
             mode = "demo"
         elif gemini_api_key:
             try:
-                logger.info("GEMINI_API_KEY detected. Directing inference to Gemini API (gemini-1.5-flash)...")
+                gemini_model = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash")
+                logger.info(f"GEMINI_API_KEY detected. Directing inference to Gemini API ({gemini_model})...")
                 answer = self.query_llm_gemini(prompt, system_prompt, gemini_api_key)
                 mode = "gemini"
             except Exception as e:

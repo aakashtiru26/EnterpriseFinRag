@@ -113,7 +113,8 @@ async def health_check(request: Request, ollama_url: Optional[str] = None):
             "url": target_ollama_url
         },
         "gemini": {
-            "status": gemini_status
+            "status": gemini_status,
+            "model": os.environ.get("GEMINI_MODEL", "gemini-3.5-flash")
         },
         "stats": {
             "total_documents": total_docs,

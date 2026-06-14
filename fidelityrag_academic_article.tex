@@ -108,26 +108,38 @@ FidelityRAG is separated into two primary tiers: a Next.js client console and a 
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[node distance=1.5cm, auto]
-    % Node definitions
-    \node [block] (user) {Client App (Next.js)};
-    \node [cloud, above of=user, yshift=0.5cm] (firebase) {Firebase Auth};
-    \node [block, right of=user, xshift=2.5cm] (gateway) {FastAPI Gateway};
-    \node [process, below of=gateway, yshift=-0.5cm] (parser) {PDF Parser (PyMuPDF)};
-    \node [process, right of=parser, xshift=2.5cm] (embed) {all-MiniLM-L6};
-    \node [database, above of=embed, yshift=0.5cm] (faiss) {Isolated FAISS};
-    \node [block, right of=gateway, xshift=2.5cm] (router) {Inference Router};
-    \node [cloud, above of=router, yshift=0.5cm] (gemini) {Gemini Cloud API};
-    \node [process, below of=router, yshift=-0.5cm] (ollama) {Local Ollama (Ngrok)};
-    
+\begin{tikzpicture}[
+    node distance=1.2cm and 1.8cm,
+    auto,
+    block/.style={rectangle, draw, fill=blue!10, text width=7.5em, text centered, rounded corners, minimum height=2.5em, font=\scriptsize, thick},
+    process/.style={rectangle, draw, fill=orange!10, text width=7.5em, text centered, rounded corners, minimum height=2.5em, font=\scriptsize, thick},
+    cloud/.style={ellipse, draw, fill=red!5, text width=6.5em, text centered, minimum height=2.5em, font=\scriptsize, thick},
+    database/.style={cylinder, draw, shape border rotate=90, fill=green!10, text width=6.5em, text centered, minimum height=2.8em, font=\scriptsize, thick},
+    arrow/.style={thick, ->, >=stealth}
+]
+    % Client Tier (Left Column)
+    \node [block] (user) {Next.js Console \\ (Client)};
+    \node [cloud, above=of user] (firebase) {Firebase Auth};
+
+    % Backend Tier (Middle Column)
+    \node [block, right=of user, xshift=0.5cm] (gateway) {FastAPI Gateway};
+    \node [process, below=of gateway] (parser) {PDF Parser \\ (PyMuPDF)};
+    \node [process, right=of parser, xshift=0.5cm] (embed) {Embedding Gen \\ (all-MiniLM-L6)};
+
+    % Storage & Inference Tier (Right Column)
+    \node [database, above=of embed] (faiss) {Isolated FAISS \\ (User Indexes)};
+    \node [block, right=of gateway, xshift=0.5cm] (router) {Inference Router};
+    \node [cloud, above=of router] (gemini) {Gemini Cloud API};
+    \node [process, below=of router] (ollama) {Local Ollama \\ (via Ngrok)};
+
     % Connections
     \draw [arrow] (user) -- (gateway);
     \draw [arrow] (user) -- (firebase);
     \draw [arrow] (gateway) -- (parser);
     \draw [arrow] (parser) -- (embed);
     \draw [arrow] (embed) -- (faiss);
-    \draw [arrow] (faiss) -- (router);
     \draw [arrow] (gateway) -- (router);
+    \draw [arrow] (faiss) -- (router);
     \draw [arrow] (router) -- (gemini);
     \draw [arrow] (router) -- (ollama);
 \end{tikzpicture}
